@@ -1,3 +1,7 @@
+# BEFORE MAKE EDITIONS #
+In git bash (or your prefered console) run the command ***'git update-index --skip-work Custom.Sample/app.config'***.
+This command will make git ignore editions in app.config file, to avoid you to commit and push your credentials
+
 # Overview #
 The purpose of this library is to provide Dynamics customers the ability to facilitate automated UI testing for their projects. These API's provide an easy to use set of commands that make setting up UI testing quick and easy. The functionality provided covers the core CRM commands that end users would perform on a typical workday and working to extend that coverage to more functionality.
 

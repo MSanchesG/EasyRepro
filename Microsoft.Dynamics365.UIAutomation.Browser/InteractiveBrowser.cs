@@ -146,9 +146,10 @@ namespace Microsoft.Dynamics365.UIAutomation.Browser
             TotalThinkTime += milliseconds;
             Thread.Sleep(milliseconds);
         }
-        public void TakeWindowScreenShot(string path, ScreenshotImageFormat fileFormat)
+
+        public void TakeWindowScreenShot(string path)
         {
-            this.Driver.TakeScreenshot().SaveAsFile(path, fileFormat);
+            this.Driver.TakeScreenshot().SaveAsFile(path);
         }
 
         public T GetPage<T>()

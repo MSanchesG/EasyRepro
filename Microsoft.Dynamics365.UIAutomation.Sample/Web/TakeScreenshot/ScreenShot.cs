@@ -26,9 +26,8 @@ namespace Microsoft.Dynamics365.UIAutomation.Sample.Web
                 xrmBrowser.LoginPage.Login(_xrmUri, _username, _password);
                 xrmBrowser.GuidedHelp.CloseGuidedHelp();
 
-                ScreenshotImageFormat fileFormat = ScreenshotImageFormat.Tiff;  // Image Format -> Png, Jpeg, Gif, Bmp and Tiff.
-                string strFileName = String.Format("Screenshot_{0}.{1}", DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss"), fileFormat);
-                xrmBrowser.TakeWindowScreenShot(strFileName, fileFormat);
+                string strFileName = String.Format("Screenshot_{0}.{1}", DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss"), "png");
+                xrmBrowser.TakeWindowScreenShot(strFileName);
                 if(!File.Exists(strFileName))
                 {
                     Assert.Fail(String.Format("Following file '{0}' was not found", strFileName));

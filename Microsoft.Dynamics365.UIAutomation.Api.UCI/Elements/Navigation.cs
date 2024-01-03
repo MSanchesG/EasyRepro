@@ -18,9 +18,9 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
         /// Opens the App supplied
         /// </summary>
         /// <param name="appName">Name of the app to open</param>
-        public void OpenApp(string appName)
+        public void OpenApp(string appName, bool reopen = false)
         {
-            _client.OpenApp(appName);
+            _client.OpenApp(appName, reopen);
         }
 
         /// <summary>

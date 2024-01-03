@@ -381,7 +381,7 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
         }
 
 
-        internal BrowserCommandResult<bool> OpenApp(string appName, int thinkTime = Constants.DefaultThinkTime)
+        internal BrowserCommandResult<bool> OpenApp(string appName, bool reopen, int thinkTime = Constants.DefaultThinkTime)
         {
             ThinkTime(thinkTime);
 
@@ -397,8 +397,8 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
                 if (!isSomeAppOpen)
                     success = TryToClickInAppTile(appName, driver);
                 else
-                    success = TryOpenAppFromMenu(driver, appName, AppReference.Navigation.UCIAppMenuButton) ||
-                              TryOpenAppFromMenu(driver, appName, AppReference.Navigation.WebAppMenuButton);
+                    success = TryOpenAppFromMenu(driver, reopen, appName, AppReference.Navigation.UCIAppMenuButton) ||
+                              TryOpenAppFromMenu(driver, reopen, appName, AppReference.Navigation.WebAppMenuButton);
 
                 if (!success)
                     throw new InvalidOperationException($"App Name {appName} not found.");
@@ -418,13 +418,18 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
             });
         }
 
-        private bool TryOpenAppFromMenu(IWebDriver driver, string appName, string appMenuButton)
+        private bool TryOpenAppFromMenu(IWebDriver driver, bool reopen, string appName, string appMenuButton)
         {
             bool found = false;
             var xpathToAppMenu = By.XPath(AppElements.Xpath[appMenuButton]);
             driver.WaitUntilClickable(xpathToAppMenu, 5.Seconds(),
                         appMenu =>
                         {
+                            if (!reopen && driver.FindElement(By.XPath("//span[@data-id=\"appBreadCrumbText\"]")).Text == appName)
+                            {
+                                found = true;
+                                return;
+                            }
                             appMenu.Click(true);
                             found = TryToClickInAppTile(appName, driver) || OpenAppFromMenu(driver, appName);
                         });
@@ -2690,6 +2695,7 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
             {
                 Actions action = new Actions(driver);
                 action.KeyDown(Keys.Control).SendKeys("S").Perform();
+                action.KeyUp(Keys.Control).Perform(); // Release the Ctrl key
 
                 return true;
             });

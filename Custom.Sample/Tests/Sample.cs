@@ -1,6 +1,7 @@
 ﻿using Custom.Sample.Base;
 using Microsoft.Dynamics365.UIAutomation.Api.UCI.DTO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OpenQA.Selenium;
 using System;
 using System.Linq;
 
@@ -19,6 +20,28 @@ namespace Custom.Sample.Tests
                 app.Navigation.OpenApp("Hub do SAC");
                 app.Navigation.OpenSubArea("Clientes", "Contas");
                 app.CommandBar.ClickCommand("Criar");
+                app.Entity.SetValue("name", GetRandomString(10, 30));
+                app.Entity.Save();
+
+                var objectId = app.Entity.GetObjectId();
+
+                Assert.IsNotNull(objectId);
+                TakePrint(nameof(Sample), nameof(Test_CreateMinimumAccount), objectId != null);
+            }
+            catch (Exception)
+            {
+                TakePrint(nameof(Sample), nameof(Test_CreateMinimumAccount), false);
+            }
+        }
+
+        [TestMethod]
+        public void Test_CreateMinimumAccountWithCustomClick()
+        {
+            try
+            {
+                app.Navigation.OpenApp("Hub do SAC");
+                app.Navigation.OpenSubArea("Clientes", "Contas");
+                app.Custom.ClickCommand(By.XPath("//span[text()=\"Criar\"]/..//img[@title=\"Criar\"]/../../.."));
                 app.Entity.SetValue("name", GetRandomString(10, 30));
                 app.Entity.Save();
 

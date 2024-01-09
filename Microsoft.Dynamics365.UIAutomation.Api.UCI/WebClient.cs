@@ -5951,6 +5951,109 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
             });
         }
         #endregion
+
+        #region Custom
+        internal BrowserCommandResult<bool>ClickCommand(By by)
+        {
+            return Execute(GetOptions($"ClickCommand"), driver =>
+            {
+                var button = driver.FindElement(by);
+                button.Click();
+
+                driver.WaitForTransaction();
+                
+                return true;
+            });
+        }
+
+        internal BrowserCommandResult<bool> DoubleClickCommand(By by)
+        {
+            return Execute(GetOptions($"DoubleClickCommand"), driver =>
+            {
+                Actions act = new Actions(driver);
+                var button = driver.FindElement(by);
+                act.DoubleClick(button).Perform();
+
+                driver.WaitForTransaction();
+
+                return true;
+            });
+        }
+
+        internal BrowserCommandResult<IWebElement> FindElement(By by)
+        {
+            return Execute(GetOptions($"FindElement"), driver =>
+            {
+                return driver.FindElement(by);
+            });
+        }
+
+        internal BrowserCommandResult<List<IWebElement>> FindElements(By by)
+        {
+            return Execute(GetOptions($"FindElements"), driver =>
+            {
+                return driver.FindElements(by).ToList();
+            });
+        }
+
+        internal bool IsVisible(By by)
+        {
+            var element = FindElement(by);
+            if (element.Success == true && element.Value != null)
+                return element.Value.IsVisible();
+            else 
+                return false;
+        }
+
+        internal bool IsEnabled(By by)
+        {
+            var element = FindElement(by);
+            if (element.Success == true && element.Value != null)
+                return element.Value.IsEnable();
+            else
+                return false;
+        }
+
+        internal bool hasElement(By by)
+        {
+            return Execute(GetOptions($"hasElement"), driver =>
+            {
+                return driver.HasElement(by);
+            });
+        }
+
+        internal int countElements (By by)
+        {
+            return Execute(GetOptions($"countElements"), driver =>
+            {
+                return driver.FindElements(by).Count;
+            });
+        }
+
+        internal bool SwitchToFrame(string frame)
+        {
+            return Execute(GetOptions($"SwitchToFrame"), driver =>
+            {
+                driver.WaitForPageToLoad();
+                driver.SwitchTo().Frame(frame);
+                driver.WaitForPageToLoad();
+                return true;
+            });
+        }
+
+        internal bool SwitchToDefaultFrame()
+        {
+            return Execute(GetOptions($"SwitchToDefaultFrame"), driver =>
+            {
+                driver.WaitForPageToLoad();
+                driver.SwitchTo().DefaultContent();
+                driver.WaitForPageToLoad();
+                return true;
+            });
+        }
+
+        #endregion
+
         internal void ThinkTime(int milliseconds)
         {
             Browser.ThinkTime(milliseconds);

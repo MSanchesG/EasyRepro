@@ -35,6 +35,7 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
 		public QuickCreate QuickCreate => this.GetElement<QuickCreate>(_client);
         public Lookup Lookup => this.GetElement<Lookup>(_client);
         public Telemetry Telemetry => this.GetElement<Telemetry>(_client);
+        public Custom Custom => this.GetElement<Custom>(_client);
 
         public T GetElement<T>(WebClient client)
             where T : Element

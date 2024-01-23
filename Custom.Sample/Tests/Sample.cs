@@ -26,11 +26,12 @@ namespace Custom.Sample.Tests
                 var objectId = app.Entity.GetObjectId();
 
                 Assert.IsNotNull(objectId);
-                TakePrint(nameof(Sample), nameof(Test_CreateMinimumAccount), objectId != null);
+                LogText("Criado objeto: " + objectId, nameof(Sample), nameof(Test_CreateMinimumAccount), objectId != null);
+                LogImage(nameof(Sample), nameof(Test_CreateMinimumAccount), objectId != null);
             }
             catch (Exception)
             {
-                TakePrint(nameof(Sample), nameof(Test_CreateMinimumAccount), false);
+                LogImage(nameof(Sample), nameof(Test_CreateMinimumAccount), false);
             }
         }
 
@@ -48,11 +49,12 @@ namespace Custom.Sample.Tests
                 var objectId = app.Entity.GetObjectId();
 
                 Assert.IsNotNull(objectId);
-                TakePrint(nameof(Sample), nameof(Test_CreateMinimumAccount), objectId != null);
+                LogText("Criado objeto: " + objectId, nameof(Sample), nameof(Test_CreateMinimumAccountWithCustomClick), objectId != null);
+                LogImage(nameof(Sample), nameof(Test_CreateMinimumAccountWithCustomClick), objectId != null);
             }
             catch (Exception)
             {
-                TakePrint(nameof(Sample), nameof(Test_CreateMinimumAccount), false);
+                LogImage(nameof(Sample), nameof(Test_CreateMinimumAccountWithCustomClick), false);
             }
         }
 
@@ -72,11 +74,12 @@ namespace Custom.Sample.Tests
                 var formAccountBlockCreate = notifications.Any(x => x.Type == FormNotificationType.Error && x.Message.Contains("Nome da Conta"));
                 Assert.IsTrue(formAccountBlockCreate);
 
-                TakePrint(nameof(Sample), nameof(Test_ValidadeAccountRequiredFields), formAccountBlockCreate);
+                LogText("", nameof(Sample), nameof(Test_ValidadeAccountRequiredFields), formAccountBlockCreate);
+                LogImage(nameof(Sample), nameof(Test_ValidadeAccountRequiredFields), formAccountBlockCreate);
             }
             catch (Exception)
             {
-                TakePrint(nameof(Sample), nameof(Test_ValidadeAccountRequiredFields), false);
+                LogImage(nameof(Sample), nameof(Test_ValidadeAccountRequiredFields), false);
             }
         }
 
@@ -92,11 +95,12 @@ namespace Custom.Sample.Tests
                 var hasGridItems = app.Grid.GetGridItems().Count > 0;
 
                 Assert.IsTrue(hasGridItems);
-                TakePrint(nameof(Sample), nameof(Test_HasContosoAccount), hasGridItems);
+                LogText("", nameof(Sample), nameof(Test_HasContosoAccount), hasGridItems);
+                LogImage(nameof(Sample), nameof(Test_HasContosoAccount), hasGridItems);
             }
             catch (Exception)
             {
-                TakePrint(nameof(Sample), nameof(Test_HasContosoAccount), false);
+                LogImage(nameof(Sample), nameof(Test_HasContosoAccount), false);
             }
         }
     }

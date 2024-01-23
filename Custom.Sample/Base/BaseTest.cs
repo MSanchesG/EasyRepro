@@ -1,7 +1,5 @@
 ﻿using Microsoft.Dynamics365.UIAutomation.Api.UCI;
 using System;
-using System.Configuration;
-using System.Diagnostics;
 using System.IO;
 
 namespace Custom.Sample.Base
@@ -12,6 +10,7 @@ namespace Custom.Sample.Base
         public readonly XrmApp app;
         public readonly WebClient client;
         public readonly string evidencePath;
+        private readonly WordIntegration word;
 
         public BaseTest()
         {
@@ -19,9 +18,21 @@ namespace Custom.Sample.Base
             app = singleton.xrmApp;
             client = singleton.client;
             evidencePath = singleton.evidencePath;
+            word = new WordIntegration(evidencePath);
         }
 
-        public void TakePrint(string feature, string testName, bool success)
+        public void LogText(string text, string feature, string testName, bool success)
+        {
+            word.LogText(text, feature, testName, success);
+        }
+
+        public void LogImage(string feature, string testName, bool success)
+        {
+            word.LogText("", feature, testName, success, false);
+            word.LogImage(TakePrint(feature, testName, success));
+        } 
+
+        public string TakePrint(string feature, string testName, bool success)
         {
             feature = feature.Replace(" ", "_");
             testName = testName.Replace(" ", "_");
@@ -31,6 +42,7 @@ namespace Custom.Sample.Base
             string file = getNextFileName(directory, $@"\{(success ? "Success" : "Error")}_{testName}", ".jpg");
 
             singleton.client.Browser.TakeWindowScreenShot(file);
+            return file;
         }
 
         public string GetRandomString(int minLen, int maxLen)

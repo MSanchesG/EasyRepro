@@ -10,13 +10,14 @@ namespace Custom.Sample.Tests
     [TestClass]
     public class Sample : BaseTest
     {
-
         //Tenta criar uma Conta nova, preenchendo apenas campos obrigatório
         [TestMethod]
-        public void Test_CreateMinimumAccount()
+        public void Test_01_CreateMinimumAccount()
         {
+            CreateTest(nameof(Test_01_CreateMinimumAccount), "descrição");
             try
             {
+                test.Info("start");
                 app.Navigation.OpenApp("Hub do SAC");
                 app.Navigation.OpenSubArea("Clientes", "Contas");
                 app.CommandBar.ClickCommand("Criar");
@@ -26,20 +27,25 @@ namespace Custom.Sample.Tests
                 var objectId = app.Entity.GetObjectId();
 
                 Assert.IsNotNull(objectId);
-                LogText("Criado objeto: " + objectId, nameof(Sample), nameof(Test_CreateMinimumAccount), objectId != null);
-                LogImage(nameof(Sample), nameof(Test_CreateMinimumAccount), objectId != null);
+                LogImage("Tela de ocorrência", objectId != null);
+                test.Pass();
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                LogImage(nameof(Sample), nameof(Test_CreateMinimumAccount), false);
+                test.Fail(e.Message);
+                LogImage(e.Message, false);
+
+                Assert.Fail(e.Message);
             }
         }
 
         [TestMethod]
-        public void Test_CreateMinimumAccountWithCustomClick()
+        public void Test_02_CreateMinimumAccountWithCustomClick()
         {
+            CreateTest(nameof(Test_02_CreateMinimumAccountWithCustomClick), "descrição 2");
             try
             {
+                test.Info("start");
                 app.Navigation.OpenApp("Hub do SAC");
                 app.Navigation.OpenSubArea("Clientes", "Contas");
                 app.Custom.ClickCommand(By.XPath("//span[text()=\"Criar\"]/..//img[@title=\"Criar\"]/../../.."));
@@ -49,21 +55,26 @@ namespace Custom.Sample.Tests
                 var objectId = app.Entity.GetObjectId();
 
                 Assert.IsNotNull(objectId);
-                LogText("Criado objeto: " + objectId, nameof(Sample), nameof(Test_CreateMinimumAccountWithCustomClick), objectId != null);
-                LogImage(nameof(Sample), nameof(Test_CreateMinimumAccountWithCustomClick), objectId != null);
+                LogImage("Tela de ocorrência", objectId != null);
+                test.Pass();
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                LogImage(nameof(Sample), nameof(Test_CreateMinimumAccountWithCustomClick), false);
+                test.Fail(e.Message);
+                LogImage(e.Message, false);
+
+                Assert.Fail(e.Message);
             }
         }
 
         //Tenta criar uma Conta nova, sem preencher campos obrigatório, o que deve gerar erro
         [TestMethod]
-        public void Test_ValidadeAccountRequiredFields()
+        public void Test_03_ValidadeAccountRequiredFields()
         {
+            CreateTest(nameof(Test_03_ValidadeAccountRequiredFields), "descrição 3");
             try
             {
+                test.Info("start");
                 app.Navigation.OpenApp("Hub do SAC");
                 app.Navigation.OpenSubArea("Clientes", "Contas");
                 app.CommandBar.ClickCommand("Criar");
@@ -72,35 +83,43 @@ namespace Custom.Sample.Tests
                 var notifications = app.Entity.GetFormNotifications();
 
                 var formAccountBlockCreate = notifications.Any(x => x.Type == FormNotificationType.Error && x.Message.Contains("Nome da Conta"));
+                
                 Assert.IsTrue(formAccountBlockCreate);
-
-                LogText("", nameof(Sample), nameof(Test_ValidadeAccountRequiredFields), formAccountBlockCreate);
-                LogImage(nameof(Sample), nameof(Test_ValidadeAccountRequiredFields), formAccountBlockCreate);
+                LogImage("Notificação de erro", formAccountBlockCreate);
+                test.Pass();
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                LogImage(nameof(Sample), nameof(Test_ValidadeAccountRequiredFields), false);
+                test.Fail(e.Message);
+                LogImage(e.Message, false);
+
+                Assert.Fail(e.Message);
             }
         }
 
         //Apenas uma validação se existe contas que respondem ao parametro de busca 'contoso'
         [TestMethod]
-        public void Test_HasContosoAccount()
+        public void Test_04_HasContosoAccount()
         {
+            CreateTest(nameof(Test_04_HasContosoAccount), "descrição 4");
             try
             {
+                test.Info("start");
                 app.Navigation.OpenApp("Hub do SAC");
                 app.Navigation.OpenSubArea("Clientes", "Contas");
                 app.Grid.Search("contoso");
                 var hasGridItems = app.Grid.GetGridItems().Count > 0;
 
                 Assert.IsTrue(hasGridItems);
-                LogText("", nameof(Sample), nameof(Test_HasContosoAccount), hasGridItems);
-                LogImage(nameof(Sample), nameof(Test_HasContosoAccount), hasGridItems);
+                LogImage("grid de ocorrência", hasGridItems);
+                test.Pass();
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                LogImage(nameof(Sample), nameof(Test_HasContosoAccount), false);
+                test.Fail(e.Message);
+                LogImage(e.Message, false);
+
+                Assert.Fail(e.Message);
             }
         }
     }

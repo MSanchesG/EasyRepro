@@ -1,12 +1,16 @@
-﻿using Microsoft.Dynamics365.UIAutomation.Api.UCI;
+﻿using AventStack.ExtentReports.Reporter;
+using AventStack.ExtentReports;
+using Microsoft.Dynamics365.UIAutomation.Api.UCI;
 using Microsoft.Dynamics365.UIAutomation.Browser;
 using System;
 using System.Configuration;
 using System.IO;
 using System.Security;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Custom.Sample.Base
 {
+    [TestClass]
     public class LoginSingleton
     {
         public LoginSingleton() { }
@@ -23,6 +27,7 @@ namespace Custom.Sample.Base
         public XrmApp xrmApp;
         public WebClient client;
         public string evidencePath;
+        public ExtentReports report;
 
         public static LoginSingleton GetInstance()
         {
@@ -43,12 +48,26 @@ namespace Custom.Sample.Base
                         if (string.IsNullOrEmpty(_instance.evidencePath))
                             _instance.evidencePath = getCurrentEvidencePath();
 
+                        if(_instance.report == null)
+                        {
+                            var fullPath = Path.GetFullPath($@"{_instance.evidencePath}\report.html");
+                            _instance.report = new ExtentReports();
+                            _instance.report.AttachReporter(new ExtentSparkReporter(fullPath));
+                        }
+                            
                         _instance.xrmApp.OnlineLogin.Login(_xrmUri, _username, _password, _mfaSecretKey);
                     }
                 }
 
             }
             return _instance;
+        }
+
+        [AssemblyCleanup]
+        public static void AssemblyCleanup()
+        {
+            _instance.xrmApp.Dispose();
+            _instance.client.Dispose();
         }
 
         private static string getCurrentEvidencePath()

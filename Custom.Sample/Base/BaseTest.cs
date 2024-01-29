@@ -1,16 +1,20 @@
-﻿using Microsoft.Dynamics365.UIAutomation.Api.UCI;
+﻿using AventStack.ExtentReports;
+using Microsoft.Dynamics365.UIAutomation.Api.UCI;
 using System;
 using System.IO;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Custom.Sample.Base
 {
+    [TestClass]
     public abstract class BaseTest
     {
         public readonly LoginSingleton singleton;
         public readonly XrmApp app;
         public readonly WebClient client;
         public readonly string evidencePath;
-        private readonly WordIntegration word;
+        private readonly ExtentReports report;
+        public ExtentTest test;
 
         public BaseTest()
         {
@@ -18,28 +22,41 @@ namespace Custom.Sample.Base
             app = singleton.xrmApp;
             client = singleton.client;
             evidencePath = singleton.evidencePath;
-            word = new WordIntegration(evidencePath);
+            report = singleton.report;
         }
 
-        public void LogText(string text, string feature, string testName, bool success)
+        public void CreateTest(string testName, string descr)
         {
-            word.LogText(text, feature, testName, success);
+            test = report.CreateTest(testName, descr);
         }
 
-        public void LogImage(string feature, string testName, bool success)
+        public void LogImage(string message, bool success)
         {
-            word.LogText("", feature, testName, success, false);
-            word.LogImage(TakePrint(feature, testName, success));
-        } 
+            string screenshotFilePath = TakePrint("", message, success);
+            screenshotFilePath = Path.GetFullPath(screenshotFilePath);
+            MediaEntityBuilder.CreateScreenCaptureFromPath(screenshotFilePath);
+            if(success)
+                test.Info(message, MediaEntityBuilder.CreateScreenCaptureFromPath(screenshotFilePath).Build());
+            else
+                test.Fail(message, MediaEntityBuilder.CreateScreenCaptureFromPath(screenshotFilePath).Build());
 
-        public string TakePrint(string feature, string testName, bool success)
+            test.AddScreenCaptureFromPath(screenshotFilePath);
+        }
+
+        [TestCleanup]
+        public void SaveReport()
+        {
+            report.Flush();
+        }
+
+        private string TakePrint(string feature, string testName, bool success)
         {
             feature = feature.Replace(" ", "_");
             testName = testName.Replace(" ", "_");
 
             var directory = $@"{evidencePath}\{feature}";
             Directory.CreateDirectory(directory);
-            string file = getNextFileName(directory, $@"\{(success ? "Success" : "Error")}_{testName}", ".jpg");
+            string file = getNextFileName(directory, $@"\{(success ? "Success" : "Error")}_{testName}", "jpg");
 
             singleton.client.Browser.TakeWindowScreenShot(file);
             return file;
@@ -49,7 +66,7 @@ namespace Custom.Sample.Base
         {
             char[] Alphabet = ("ABCDEFGHIJKLMNOPQRSTUVWXYZabcefghijklmnopqrstuvwxyz0123456789").ToCharArray();
             Random m_randomInstance = new Random();
-            Object m_randLock = new object();
+            object m_randLock = new object();
 
             int alphabetLength = Alphabet.Length;
             int stringLength;
@@ -84,14 +101,14 @@ namespace Custom.Sample.Base
             return (new string(str));
         }
 
-        public string getNextFileName(string directory, string fileName, string extension)
+        private string getNextFileName(string directory, string fileName, string extension)
         {
             int i = -1;
             string file;
             do
             {
                 i++;
-                file = directory + $@"\{fileName}_{i}.jpg";
+                file = directory + $@"\{fileName}_{i}.{extension}";
             } while (File.Exists(file));
 
             return file;

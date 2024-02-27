@@ -3,6 +3,7 @@ using Microsoft.Dynamics365.UIAutomation.Api.UCI;
 using System;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Diagnostics;
 
 namespace Custom.Sample.Base
 {
@@ -15,6 +16,7 @@ namespace Custom.Sample.Base
         public readonly string evidencePath;
         private readonly ExtentReports report;
         public ExtentTest test;
+        private string testName;
 
         public BaseTest()
         {
@@ -25,22 +27,29 @@ namespace Custom.Sample.Base
             report = singleton.report;
         }
 
-        public void CreateTest(string testName, string descr)
+        public void CreateTest(string descr)
         {
+            testName = new StackTrace(true).GetFrame(1).GetMethod().Name;
             test = report.CreateTest(testName, descr);
         }
 
-        public void LogImage(string message, bool success)
+        private void LogImage(string message, string type)
         {
-            string screenshotFilePath = TakePrint("", message, success);
+            string screenshotFilePath = TakePrint(type == "info" || type == "pass");
             screenshotFilePath = Path.GetFullPath(screenshotFilePath);
             MediaEntityBuilder.CreateScreenCaptureFromPath(screenshotFilePath);
-            if(success)
+            if (type == "pass")
+            {
+                test.Pass(message, MediaEntityBuilder.CreateScreenCaptureFromPath(screenshotFilePath).Build());
+                test.AddScreenCaptureFromPath(screenshotFilePath);
+            }
+            else if (type == "info")
                 test.Info(message, MediaEntityBuilder.CreateScreenCaptureFromPath(screenshotFilePath).Build());
             else
+            {
                 test.Fail(message, MediaEntityBuilder.CreateScreenCaptureFromPath(screenshotFilePath).Build());
-
-            test.AddScreenCaptureFromPath(screenshotFilePath);
+                test.AddScreenCaptureFromPath(screenshotFilePath);
+            }
         }
 
         [TestCleanup]
@@ -49,17 +58,34 @@ namespace Custom.Sample.Base
             report.Flush();
         }
 
-        private string TakePrint(string feature, string testName, bool success)
+        public void Info(string message = "")
         {
-            feature = feature.Replace(" ", "_");
-            testName = testName.Replace(" ", "_");
+            LogImage(message, "info");
+        }
 
-            var directory = $@"{evidencePath}\{feature}";
-            Directory.CreateDirectory(directory);
-            string file = getNextFileName(directory, $@"\{(success ? "Success" : "Error")}_{testName}", "jpg");
+        public void Pass(string message = "")
+        {
+            LogImage(message, "pass");
+        }
+
+        public void Fail(string message = "")
+        {
+            LogImage(message, "fail");
+        }
+
+        private string TakePrint(bool success)
+        {
+            Directory.CreateDirectory(evidencePath);
+            string file = getNextFileName(evidencePath, $@"\{(success ? "Success" : "Error")}_{testName}", "jpg");
 
             singleton.client.Browser.TakeWindowScreenShot(file);
             return file;
+        }
+
+        public string getTestName()
+        {
+            testName = new StackTrace(true).GetFrame(1).GetMethod().Name;
+            return testName;
         }
 
         public string GetRandomString(int minLen, int maxLen)

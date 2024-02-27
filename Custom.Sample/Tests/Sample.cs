@@ -10,11 +10,10 @@ namespace Custom.Sample.Tests
     [TestClass]
     public class Sample : BaseTest
     {
-        //Tenta criar uma Conta nova, preenchendo apenas campos obrigatório
         [TestMethod]
         public void Test_01_CreateMinimumAccount()
         {
-            CreateTest(nameof(Test_01_CreateMinimumAccount), "descrição");
+            CreateTest("Tenta criar uma Conta nova, preenchendo apenas campos obrigatório");
             try
             {
                 test.Info("start");
@@ -27,14 +26,11 @@ namespace Custom.Sample.Tests
                 var objectId = app.Entity.GetObjectId();
 
                 Assert.IsNotNull(objectId);
-                LogImage("Tela de ocorrência", objectId != null);
-                test.Pass();
+                Pass();
             }
             catch (Exception e)
             {
-                test.Fail(e.Message);
-                LogImage(e.Message, false);
-
+                Fail(e.Message);
                 Assert.Fail(e.Message);
             }
         }
@@ -42,7 +38,7 @@ namespace Custom.Sample.Tests
         [TestMethod]
         public void Test_02_CreateMinimumAccountWithCustomClick()
         {
-            CreateTest(nameof(Test_02_CreateMinimumAccountWithCustomClick), "descrição 2");
+            CreateTest("Tenta criar uma Conta nova, preenchendo apenas campos obrigatório, usando xpath para clicar no 'criar'");
             try
             {
                 test.Info("start");
@@ -55,23 +51,19 @@ namespace Custom.Sample.Tests
                 var objectId = app.Entity.GetObjectId();
 
                 Assert.IsNotNull(objectId);
-                LogImage("Tela de ocorrência", objectId != null);
-                test.Pass();
+                Pass();
             }
             catch (Exception e)
             {
-                test.Fail(e.Message);
-                LogImage(e.Message, false);
-
+                Fail(e.Message);
                 Assert.Fail(e.Message);
             }
         }
 
-        //Tenta criar uma Conta nova, sem preencher campos obrigatório, o que deve gerar erro
         [TestMethod]
         public void Test_03_ValidadeAccountRequiredFields()
         {
-            CreateTest(nameof(Test_03_ValidadeAccountRequiredFields), "descrição 3");
+            CreateTest("Tenta criar uma Conta nova, sem preencher campos obrigatório, o que deve gerar erro");
             try
             {
                 test.Info("start");
@@ -83,25 +75,22 @@ namespace Custom.Sample.Tests
                 var notifications = app.Entity.GetFormNotifications();
 
                 var formAccountBlockCreate = notifications.Any(x => x.Type == FormNotificationType.Error && x.Message.Contains("Nome da Conta"));
-                
+
                 Assert.IsTrue(formAccountBlockCreate);
-                LogImage("Notificação de erro", formAccountBlockCreate);
-                test.Pass();
+                Pass();
+                client.Browser.Navigate(Microsoft.Dynamics365.UIAutomation.Browser.NavigationOperation.Reload);
             }
             catch (Exception e)
             {
-                test.Fail(e.Message);
-                LogImage(e.Message, false);
-
+                Fail(e.Message);
                 Assert.Fail(e.Message);
             }
         }
 
-        //Apenas uma validação se existe contas que respondem ao parametro de busca 'contoso'
         [TestMethod]
         public void Test_04_HasContosoAccount()
         {
-            CreateTest(nameof(Test_04_HasContosoAccount), "descrição 4");
+            CreateTest("Apenas uma validação se existe contas que respondem ao parametro de busca 'contoso");
             try
             {
                 test.Info("start");
@@ -111,14 +100,11 @@ namespace Custom.Sample.Tests
                 var hasGridItems = app.Grid.GetGridItems().Count > 0;
 
                 Assert.IsTrue(hasGridItems);
-                LogImage("grid de ocorrência", hasGridItems);
-                test.Pass();
+                Pass();
             }
             catch (Exception e)
             {
-                test.Fail(e.Message);
-                LogImage(e.Message, false);
-
+                Fail(e.Message);
                 Assert.Fail(e.Message);
             }
         }
